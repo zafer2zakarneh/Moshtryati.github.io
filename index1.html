@@ -1,245 +1,434 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>مشترياتي 🛒</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>قائمة المشتريات — وردي نهائي 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Noto Naskh Arabic', serif; direction: rtl; text-align: center; background: #f9f9f9; margin:0; padding:20px; }
-  h2 { margin: 10px; font-size: 26px; }
-  .topBar { width: 90%; margin: 0 auto 12px auto; display:flex; justify-content:flex-end; gap:12px; align-items:center; }
-  .box { min-width:80px; padding:8px 10px; border-radius:8px; background:#fff; box-shadow:0 0 6px rgba(0,0,0,0.08); border:1px solid #e6e6e6; font-size:14px; }
-  .balanceTop { font-weight:700; padding:8px 12px; border-radius:8px; background:#fff; box-shadow:0 0 6px rgba(0,0,0,0.08); border:1px solid #e6e6e6; min-width:120px; text-align:center;}
-  table { width: 90%; margin: 10px auto 30px auto; border-collapse: collapse; background: white; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
-  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 16px; }
-  th { background-color: #f1f1f1; }
-  tfoot td { font-weight: bold; background: #fafafa; }
-  input.itemInput { width: 95%; padding: 5px; font-size: 15px; font-family: inherit; text-align: center; box-sizing: border-box; }
-  button { padding: 6px 14px; margin: 10px; font-size: 15px; border: none; border-radius: 5px; cursor: pointer; }
-  .btn { background: #007AFF; color: white; }
-  .btn:hover { background: #005BB5; }
-  .strike td { text-decoration: line-through; color: gray; }
-  .strike input { text-decoration: line-through; color: gray; }
-  .toggleBtn { cursor: pointer; font-size: 18px; user-select:none; }
-  .total { min-width:80px; }
-  @media print {
-    .topBar, .btn { display:none !important; }
-  }
+:root{
+  --bg:#fff6fb;
+  --card:#ffffff;
+  --rose-1:#ff8fb0;
+  --rose-2:#ff5a87;
+  --muted:#8a7a86;
+  --shadow: 0 10px 30px rgba(255,90,130,0.08);
+  --radius:14px;
+  --sea-blue:#025b8a;
+  --desert-yellow:#d6a60f;
+  --grass-green:#3a9a40;
+  --rose-red:#d63b4a;
+  --copper-orange:#cc6b2f;
+  --haft-silver:#bfc5cc;
+  --gray:#9b9b9b;
+  --pale-gray:#dcdcdc;
+  --antique-copper:#7a3b2b;
+}
+*{box-sizing:border-box;font-family:'Cairo',sans-serif}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,#fff7fb,#fff0f6);direction:rtl;color:#2b2b2b;padding:12px}
+.container{max-width:980px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;position:relative}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--rose-1),var(--rose-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:18px;box-shadow:var(--shadow)}
+.title h1{margin:0;font-size:18px}
+.title p{margin:0;font-size:13px;color:var(--muted)}
+
+/* hearts floating */
+.hearts{position:absolute;left:8px;top:4px;pointer-events:none}
+.heart{width:18px;height:18px;transform:rotate(-45deg);position:absolute;animation:float 5s linear infinite;opacity:0.95}
+.heart:before,.heart:after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:var(--rose-1)}
+.heart:before{top:-9px;left:0}
+.heart:after{left:9px;top:0}
+.heart:nth-child(1){left:0;top:0;animation-delay:0s}
+.heart:nth-child(2){left:30px;top:6px;animation-delay:1.2s;transform:scale(0.9) rotate(-45deg)}
+.heart:nth-child(3){left:60px;top:2px;animation-delay:2.3s;transform:scale(0.8) rotate(-45deg)}
+@keyframes float{0%{transform:translateY(0) rotate(-45deg) scale(1);opacity:0.95}50%{transform:translateY(-18px) rotate(-45deg) scale(1.05);opacity:1}100%{transform:translateY(0) rotate(-45deg) scale(1);opacity:0.95}}
+
+/* actions */
+.actions{display:flex;gap:8px;align-items:center}
+.btn{background:var(--rose-1);color:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:800;box-shadow:0 6px 18px rgba(255,90,130,0.12)}
+.btn.alt{background:var(--rose-2)}
+
+/* pill showing amount only */
+.pill{display:inline-block;padding:6px 12px;border-radius:999px;background:linear-gradient(90deg,var(--rose-1),#8ff0df);color:white;font-weight:900;box-shadow:0 8px 20px rgba(255,90,130,0.12);cursor:pointer}
+/* negative pill style */
+.pill.negative{background:linear-gradient(90deg,#ff2e4d,#a10012);color:white;text-shadow:0 1px 0 rgba(0,0,0,0.6);box-shadow:0 0 0 3px rgba(255,255,255,0.6), 0 0 0 6px rgba(0,0,0,0.25)}
+
+/* card and table */
+.card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:8px;text-align:center;border-bottom:1px dashed #fde7ef;font-size:14px}
+.input{width:100%;padding:8px;border-radius:8px;border:1px solid #f6e6ee;text-align:center;font-size:14px;background:transparent}
+.rowTotal{font-weight:800;color:#2b2b2b}
+
+/* crossed style */
+.crossed{opacity:0.45;text-decoration:line-through;color:#b18998}
+
+/* currency visuals with colors per denom */
+.currency-pile{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.coin{min-width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:linear-gradient(180deg,#fff,#fff4f7);box-shadow:0 4px 10px rgba(0,0,0,0.06);color:#333;padding:6px}
+.bill{min-width:72px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;background:linear-gradient(135deg,#fff,#fff6f8);box-shadow:0 4px 10px rgba(0,0,0,0.06);color:#333;padding:6px}
+
+/* color classes for denominations */
+.d200{background:var(--sea-blue);color:white}
+.d100{background:var(--desert-yellow);color:#3b2b00}
+.d50{background:var(--grass-green);color:white}
+.d20{background:var(--rose-red);color:white}
+.d10{background:var(--copper-orange);color:white}
+.d5{background:linear-gradient(180deg,#eef2f6,#cfd6db);color:#333}
+.d2{background:var(--gray);color:white}
+.d1{background:var(--pale-gray);color:#333}
+.d05{background:var(--antique-copper);color:white}
+
+/* quick input */
+.quick-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.quick-input{flex:1;padding:10px;border-radius:10px;border:1px dashed #ffd7e6;background:#fff;text-align:right;font-size:15px}
+
+/* confirmation tick */
+.tick{display:inline-block;margin-right:8px;color:green;font-weight:800;opacity:0;transform:translateY(-6px);transition:all .25s ease}
+
+/* tips area */
+.tips{margin-top:12px;padding:10px;border-radius:12px;background:linear-gradient(90deg,#fff,#fff6fb);box-shadow:0 6px 18px rgba(111,209,200,0.04);min-height:56px}
+.tip-text{font-size:15px;color:#7a5160;font-weight:600}
+
+/* footer area */
+.footer-actions{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap}
+.save-area{display:flex;gap:8px;align-items:center}
+.note{font-size:13px;color:var(--muted)}
+
+/* responsive */
+@media (max-width:720px){
+  .header{flex-direction:column;align-items:flex-start;gap:10px}
+  .table th,.table td{font-size:13px;padding:6px}
+  .logo{width:48px;height:48px;font-size:16px}
+  .actions{width:100%;justify-content:flex-start}
+  .footer-actions{flex-direction:column;align-items:stretch}
+  .hearts{left:6px;top:2px}
+}
 </style>
 </head>
 <body>
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <div class="logo">مشترياتي</div>
+      <div class="title">
+        <h1>قائمة المشتريات — وردي 🌸</h1>
+      </div>
+    </div>
 
-<h2>مشترياتي 🛒</h2>
+    <div class="hearts" aria-hidden>
+      <div class="heart"></div><div class="heart"></div><div class="heart"></div>
+    </div>
 
-<!-- شريط علوي يظهر بعد ادخال الرصيد: صندوقان + رصيد -->
-<div id="topBoxes" class="topBar" style="display:none;">
-  <div class="box">صندوق 2</div>
-  <div class="box">صندوق 1</div>
-  <div id="balanceTop" class="balanceTop">الرصيد: 0.00 ش</div>
+    <div class="actions">
+      <div id="balancePill" class="pill" style="display:none;"></div>
+      <button id="toggleBalanceBtn" class="btn">الرصيد</button>
+      <button id="toggleChangeBtn" class="btn alt">إرجاع النقود</button>
+      <button id="screenshotBtn" class="btn">لقطة</button>
+    </div>
+  </div>
+
+  <div class="card" id="mainCard">
+    <div class="quick-row">
+      <input id="quickEntry" class="quick-input" placeholder="أدخل: 6 شمام 5ش أو شمام 5ش ثم اضغط Enter" autocomplete="off" />
+      <button id="addQuickBtn" class="btn">أدخل</button>
+      <div id="confirmTick" class="tick">✅ تم</div>
+    </div>
+
+    <table class="table" role="table" aria-label="قائمة الأصناف">
+      <thead>
+        <tr>
+          <th style="width:46%">الصنف</th>
+          <th style="width:16%">الكمية</th>
+          <th style="width:18%">سعر الوحدة (₪)</th>
+          <th style="width:12%">إجمالي</th>
+          <th style="width:8%">شطب</th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody">
+        <!-- rows injected only after quick entry -->
+      </tbody>
+    </table>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:12px;flex-wrap:wrap">
+      <div style="min-width:200px">
+        <div class="note">المجموع (باستثناء المشطوبين): <b id="grandTotal">0.00</b> ₪</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="note">اضغط على "الرصيد" لأدخل مبلغ الزبون وأعرضه أعلى الصفحة.</div>
+      </div>
+    </div>
+
+    <div class="card" id="changeBox" style="margin-top:12px;display:none">
+      <h4 style="margin:6px 0 8px 0">فئات العملة — إرجاع النقود</h4>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>إرجاع متوقع: <b id="changeAmount">0.00</b> ₪</div>
+        <div class="currency-pile" id="changeVisual"></div>
+      </div>
+    </div>
+
+    <div class="tips">
+      <div id="tipText" class="tip-text">مرحبًا! نصائح لطيفة ستظهر هنا كل دقيقتين 💖</div>
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <div class="save-area">
+      <button id="saveBtn" class="btn">حفظ الجلسة</button>
+      <button id="loadBtn" class="btn alt">تحميل الجلسة</button>
+      <button id="exportJSON" class="btn">تصدير JSON</button>
+      <button id="exportTXT" class="btn alt">تصدير TXT</button>
+    </div>
+    <div class="note">قائمة بسيطة وحساسة — أضف منتجاتك بسرعة ♥</div>
+  </div>
 </div>
 
-<div style="margin-bottom:8px;">
-  <button class="btn" onclick="addBalance()">+ رصيد</button>
-  <button class="btn" onclick="window.print()">🖨️ طباعة الفاتورة</button>
-</div>
-
-<table id="billTable">
-  <thead>
-    <tr>
-      <th>✔️</th>
-      <th>الصنف</th>
-      <th>الكمية</th>
-      <th>سعر الوحدة (ش)</th>
-      <th>الإجمالي (ش)</th>
-    </tr>
-  </thead>
-  <tbody id="billBody">
-    <tr>
-      <td class="toggleBtn" onclick="toggleStrike(this)">⭕</td>
-      <td><input type="text" class="itemInput" placeholder="مثال: 6 شمام 5ش" onkeydown="handleEnter(event,this)"></td>
-      <td><input type="number" class="itemInput qtyInput" value="0" disabled></td>
-      <td><input type="number" class="itemInput priceInput" value="0" step="0.01" disabled></td>
-      <td class="total">0.00</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr id="balanceRow" style="display:none;">
-      <td colspan="4">الرصيد المتبقي</td>
-      <td id="balanceValue">0.00</td>
-    </tr>
-    <tr>
-      <td colspan="4">المجموع الكلي</td>
-      <td id="grandTotal">0.00</td>
-    </tr>
-  </tfoot>
-</table>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-let customerBalance = null;
-let lastSpaceTime = 0;
+// helpers and state
+const el = (s)=>document.querySelector(s);
+const elAll = (s)=>document.querySelectorAll(s);
+const DENOMS = [200,100,50,20,10,5,2,1,0.5]; // ILS
+let state = {items:[],paid:null,balanceVisible:false,freeze:false};
 
-// نستخدم debounce 2 ثانية لتحديث الصف بعد التعديل اليدوي على الكمية أو السعر
-const DEBOUNCE_MS = 2000;
+// tips array (30 tips)
+const TIPS = [
+"كل صباح يبدأ بترتيب بسيط — جهّز قائمة مشتريات قصيرة.",
+"اشتري ما تحتاج فقط — توفير بسيط يجعل القلوب تطير.",
+"لاحقًا يمكنك تصنيف الأصناف حسب النوع لتسريع الشراء.",
+"ضعي علامة على الأصناف المفضلة لتكرارها بسرعة.",
+"جرّبي شراء الخضار الموسمية — ألذ وأوفر.",
+"لا تنسي الفواكه للحلوى الطبيعية.",
+"قومي بمقارنة الأسعار قبل الشراء — ذكية وموفرة.",
+"ترتيب السلة بحسب الوزن يسهل حملها.",
+"اكتبي بدلًا من الحفظ الذهني — الذاكرة تخون أحيانًا.",
+"ابتسمي عند التسوق — الطاقة الإيجابية تجذب الأفضل.",
+"استبدلي المنتجات الثقيلة ببدائل أخف للرحلات القصيرة.",
+"استخدمي القياسات الدقيقة لتجنب الهدر.",
+"احرصي على فحص تواريخ الصلاحية سريعًا.",
+"اشتري بكميات صغيرة إن لم تكوني متأكدة.",
+"التخطيط المسبق للوجبات يوفر وقتك وصحتك.",
+"اختاري منتجات صديقة للبيئة حينما تستطيعين.",
+"قيمي العروض بعين نقدية — ليست كل خصم يستحق الشراء.",
+"احفظي المفضلات لتسريع الإدخالات المستقبلية.",
+"قطّعي قائمة طويلة لرحلتين بدلًا من واحدة مرهقة.",
+"حافظي على حقيبة تسوق قابلة لإعادة الاستخدام.",
+"اشتري من البائعين المحليين لدعم المجتمع.",
+"القلب الصغير يفرح باللفتات الصغيرة — اشتري زهرة! 🌹",
+"حضّري وجبة سريعة من مكونات بسيطة لتبقى مبتسمة.",
+"ابتعدي عن التسوق حين تكوني جوعانة — مغامرة خطأ.",
+"اختاري منتجات ذات تغليف أقل للبيئة.",
+"احتفظي بقلم صغير في المحفظة لتدوين السريع.",
+"استمتعي بوقتك — الشراء تجربة، اجعليها لطيفة.",
+"اعملي قوائم شهرية لتقليل النسيان.",
+"تذكّري: كل عملية شراء هي استثمار في يومك.",
+"قومي بمكافأة نفسك بعمل بسيط بعد إنهاء التسوق."
+];
 
-// عند انشاء الصف/الصف الأول نضيف مستمعي حدث للحقلين qty و price
-function attachInputListeners(row){
-  const qtyInput = row.querySelector(".qtyInput");
-  const priceInput = row.querySelector(".priceInput");
+function format(n){return Number(n||0).toFixed(2);}
+function debounce(fn,ms){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),ms)}}
 
-  function scheduleUpdate(){
-    // حفظ المؤقت على العنصر نفسه
-    if(row._updateTimer) clearTimeout(row._updateTimer);
-    row._updateTimer = setTimeout(()=>{
-      recomputeRowFromInputs(row);
-      updateGrandTotal();
-      row._updateTimer = null;
-    }, DEBOUNCE_MS);
-  }
-
-  // عند الكتابة نؤجل التحديث
-  qtyInput.addEventListener("input", scheduleUpdate);
-  priceInput.addEventListener("input", scheduleUpdate);
-}
-
-// تعيد حساب إجمالي الصف اعتماداً على المدخلات اليدوية
-function recomputeRowFromInputs(row){
-  const qty = parseFloat(row.querySelector(".qtyInput").value) || 0;
-  const price = parseFloat(row.querySelector(".priceInput").value) || 0;
-  const totalCell = row.querySelector(".total");
-  const newTotal = qty * price;
-  totalCell.textContent = newTotal.toFixed(2);
-}
-
-// عند الضغط Enter أو Space: تفكيك النص
-function handleEnter(e, input){
-  if(e.key === "Enter" || e.key === " "){
-    let now = Date.now();
-    if(e.key === " "){
-      if(now - lastSpaceTime < 500){ // ضغطتين Space => اضف صف
-        parseItem(input);
-        addRow();
-      } else {
-        parseItem(input); // ضغطة وحدة = حساب فقط
-      }
-      lastSpaceTime = now;
-    } else if(e.key === "Enter"){
-      parseItem(input);
-      addRow();
+// parse quick input
+function parseQuickInput(text){
+  if(!text || !text.trim()) return null;
+  text = text.replace(/\u200f/g,'').trim();
+  text = text.replace(/،/g,',');
+  const priceMatch = text.match(/(\d+(\.\d+)?)\s*ش\s*$/i) || text.match(/(\d+(\.\d+)?)\s*ش/i);
+  let price = null;
+  if(priceMatch){
+    price = parseFloat(priceMatch[1]);
+    text = text.substring(0, priceMatch.index).trim();
+  } else {
+    const nums = text.match(/(\d+(\.\d+)?)/g);
+    if(nums && nums.length>0){
+      price = parseFloat(nums[nums.length-1]);
+      text = text.replace(new RegExp(nums[nums.length-1]+'\\s*$'),'').trim();
     }
-    e.preventDefault();
   }
+  const leadingMatch = text.match(/^\s*(\d+(\.\d+)?)\s+/);
+  let qty = 1;
+  if(leadingMatch){
+    qty = parseFloat(leadingMatch[1]);
+    text = text.substring(leadingMatch[0].length).trim();
+  }
+  let name = text.trim();
+  if(!name) name = 'بدون اسم';
+  if(price===null || isNaN(price)) price = 0;
+  return {name, qty, price};
 }
 
-function parseItem(input){
-  let text = input.value.trim();
-  let row = input.closest("tr");
-  let cells = row.querySelectorAll("td");
-
-  let qty = 1, price = 0, name = text;
-
-  let qtyMatch = text.match(/^(\d+)\s+/);
-  if(qtyMatch){ qty = parseFloat(qtyMatch[1]); name = text.replace(qtyMatch[0],''); }
-
-  let priceMatch = text.match(/([\d\.]+)\s*ش/);
-  if(priceMatch){ price = parseFloat(priceMatch[1]); name = name.replace(priceMatch[0],''); }
-
-  // اسم الصنف
-  cells[1].querySelector("input").value = name.trim();
-  let qtyInput = cells[2].querySelector("input");
-  let priceInput = cells[3].querySelector("input");
-
-  qtyInput.value = qty;
-  priceInput.value = price.toFixed(2);
-
-  let total = qty * price;
-  cells[4].textContent = total.toFixed(2);
-
-  // قفل الحقول ثانيتين ثم فتحها (كما كنت تريد)
-  qtyInput.disabled = true;
-  priceInput.disabled = true;
-  setTimeout(()=>{
-    qtyInput.disabled = false;
-    priceInput.disabled = false;
-  },2000);
-
-  // تأكد من أن لديه مستمعي الإدخال (مرة واحدة)
-  attachInputListeners(row);
-
-  updateGrandTotal();
-}
-
-function addRow(){
-  let tbody = document.getElementById("billBody");
-  let newRow = document.createElement("tr");
-  newRow.innerHTML = `
-    <td class="toggleBtn" onclick="toggleStrike(this)">⭕</td>
-    <td><input type="text" class="itemInput" placeholder="اكتب صنف..." onkeydown="handleEnter(event,this)"></td>
-    <td><input type="number" class="itemInput qtyInput" value="0" disabled></td>
-    <td><input type="number" class="itemInput priceInput" value="0" step="0.01" disabled></td>
-    <td class="total">0.00</td>
+// create row
+function createRow(item={name:'',qty:1,price:0,excluded:false}){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="text-align:right;padding-right:8px"><input class="input itemName" placeholder="مثال: 6 شمام 5ش" value="${escapeHtml(item.name)}" /></td>
+    <td><input class="input itemQty" type="number" step="0.01" value="${item.qty}" /></td>
+    <td><input class="input itemPrice" type="number" step="0.01" value="${item.price}" /></td>
+    <td class="rowTotal">${format(item.qty*item.price)}</td>
+    <td style="text-align:center"><input class="excludeChk" type="checkbox" ${item.excluded?'checked':''} title="شطب/إلغاء احتساب"></td>
   `;
-  tbody.appendChild(newRow);
+  const chk = tr.querySelector('.excludeChk');
+  chk.addEventListener('change',()=>{ if(chk.checked){ tr.classList.add('crossed'); } else { tr.classList.remove('crossed'); } saveStateFromUI(); recalc(); });
+  if(item.excluded) tr.classList.add('crossed');
+  const qty = tr.querySelector('.itemQty');
+  const price = tr.querySelector('.itemPrice');
+  const name = tr.querySelector('.itemName');
+  const upd = debounce(()=>{ tr.querySelector('.rowTotal').textContent = format((parseFloat(qty.value||0))*(parseFloat(price.value||0))); saveStateFromUI(); recalc(); },2000);
+  qty.addEventListener('input',upd);
+  price.addEventListener('input',upd);
+  name.addEventListener('input',debounce(()=>{ saveStateFromUI(); },700));
+  return tr;
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  // ربط مستمعي الإدخال للصف الجديد
-  attachInputListeners(newRow);
+function addRow(item){ const tr = createRow(item); el('#itemsBody').appendChild(tr); saveStateFromUI(); recalc(); }
 
-  // فوكس لحقل النص الجديد
-  newRow.querySelector("input[type=text]").focus();
+// recalc totals
+function recalc(){
+  const rows = [...elAll('#itemsBody tr')];
+  let total=0;
+  rows.forEach(r=>{ if(!r.querySelector('.excludeChk').checked){ const q=parseFloat(r.querySelector('.itemQty').value||0); const p=parseFloat(r.querySelector('.itemPrice').value||0); total += q*p; } });
+  el('#grandTotal').textContent = format(total);
+  const paid = state.paid || 0;
+  const change = Math.round((paid - total)*100)/100;
+  el('#changeAmount').textContent = format(Math.abs(change));
+  updateBalancePillVisual();
+  if(el('#changeBox').style.display === 'block') calcChangeDenoms();
 }
 
-function toggleStrike(btn){
-  let row = btn.closest("tr");
-  row.classList.toggle("strike");
-  updateGrandTotal();
+// save/load
+function saveStateFromUI(){
+  const rows = [...elAll('#itemsBody tr')];
+  state.items = rows.map(r=>({ name: r.querySelector('.itemName').value, qty: parseFloat(r.querySelector('.itemQty').value||0), price: parseFloat(r.querySelector('.itemPrice').value||0), excluded: !!r.querySelector('.excludeChk').checked }));
+  localStorage.setItem('basket_pink_final2', JSON.stringify(state));
+}
+function loadState(s){
+  state = s || JSON.parse(localStorage.getItem('basket_pink_final2')||'null') || state;
+  el('#itemsBody').innerHTML='';
+  (state.items.length?state.items:[]).forEach(i=>addRow(i));
+  recalc();
 }
 
-function updateGrandTotal(){
-  let rows = document.querySelectorAll("#billBody tr");
-  let sum = 0;
-  rows.forEach(r=>{
-    if(!r.classList.contains("strike")){
-      sum += parseFloat(r.querySelector(".total").textContent) || 0;
-    }
+// change denom calc
+function calcChangeDenoms(){
+  const total = parseFloat(el('#grandTotal').textContent||0);
+  const paid = state.paid || 0;
+  let diff = Math.round((paid - total)*100)/100;
+  const container = el('#changeVisual'); container.innerHTML='';
+  if(diff <= 0){
+    container.innerHTML = '<div class="note">لا حاجة لإرجاع نقود</div>';
+    return;
+  }
+  let rem = diff;
+  const res = [];
+  DENOMS.forEach(d=>{ const cnt = Math.floor(rem / d); if(cnt>0){ res.push({denom:d,count:cnt}); rem = Math.round((rem - cnt*d)*100)/100; } });
+  res.forEach(r=>{
+    const node = document.createElement('div');
+    const cls = r.denom === 200 ? 'd200 bill' :
+                r.denom === 100 ? 'd100 bill' :
+                r.denom === 50 ? 'd50 bill' :
+                r.denom === 20 ? 'd20 bill' :
+                r.denom === 10 ? 'd10 bill' :
+                r.denom === 5 ? 'd5 coin' :
+                r.denom === 2 ? 'd2 coin' :
+                r.denom === 1 ? 'd1 coin' : 'd05 coin';
+    node.className = cls;
+    node.textContent = `${r.denom}₪ × ${r.count}`;
+    container.appendChild(node);
   });
-  document.getElementById("grandTotal").textContent = sum.toFixed(2);
+}
 
-  // إذا كان هناك رصيد زبون حساب الباقي وتحديث العرض العلوي
-  if(customerBalance !== null){
-    let remain = customerBalance - sum;
-    let balanceCell = document.getElementById("balanceValue");
-    let balanceTopCell = document.getElementById("balanceTop");
-
-    balanceCell.textContent = remain.toFixed(2);
-    balanceCell.style.color = remain >= 0 ? "green" : "red";
-
-    // تحديث أعلى الصفحة
-    balanceTopCell.textContent = `الرصيد: ${customerBalance.toFixed(2)} ش — المتبقي: ${remain.toFixed(2)} ش`;
-    balanceTopCell.style.color = remain >= 0 ? "green" : "red";
-
-    if(remain === 0){ balanceCell.textContent += " ✔️"; }
+// handle balance click: prompt and set pill
+function handleBalanceClick(){
+  const v = prompt('أدخل مبلغ دفع الزبون (₪):', state.paid==null?'':state.paid);
+  if(v === null) return;
+  const num = parseFloat(String(v).replace(',','.'));
+  if(isNaN(num)){ alert('الرجاء إدخال رقم صحيح'); return; }
+  state.paid = num;
+  saveStateFromUI(); recalc();
+}
+function updateBalancePillVisual(){
+  const pill = el('#balancePill');
+  if(state.paid == null){ pill.style.display='none'; return; }
+  const total = parseFloat(el('#grandTotal').textContent||0);
+  const diff = Math.round((state.paid - total)*100)/100;
+  if(diff < 0){
+    pill.classList.add('negative');
+    pill.style.display='inline-block';
+    pill.textContent = '-' + format(Math.abs(diff)) + ' ₪';
+  } else {
+    pill.classList.remove('negative');
+    pill.style.display='inline-block';
+    pill.textContent = 'الرصيد: ' + format(state.paid) + ' ₪';
   }
 }
 
-function addBalance(){
-  let amount = prompt("أدخل رصيد الزبون (شيكل):");
-  if(amount !== null && amount !== "" && !isNaN(amount)){
-    customerBalance = parseFloat(amount);
-    // إظهار سطر الرصيد في Footer
-    document.getElementById("balanceRow").style.display = "table-row";
-    // إظهار شريط أعلى الصفحة فيه صندوقان + قيمة الرصيد
-    document.getElementById("topBoxes").style.display = "flex";
-    // إعداد القيمة العلوية فوراً
-    document.getElementById("balanceTop").textContent = `الرصيد: ${customerBalance.toFixed(2)} ش`;
-    updateGrandTotal();
-  }
+// freeze inputs to avoid mobile jumping
+function freezeInputs(duration=2000){
+  state.freeze = true;
+  document.querySelectorAll('.input, .quick-input, button').forEach(elm=>{ elm.disabled = true; });
+  setTimeout(()=>{ document.querySelectorAll('.input, .quick-input, button').forEach(elm=>{ elm.disabled = false; }); state.freeze=false; }, duration);
 }
 
-// عند التحميل: ربط مستمعي الحقل الأول
-document.addEventListener("DOMContentLoaded", ()=>{
-  const firstRow = document.querySelector("#billBody tr");
-  attachInputListeners(firstRow);
-});
+// confirmation tick + sound
+function confirmFeedback(){
+  const tick = el('#confirmTick');
+  tick.style.opacity = '1';
+  tick.style.transform = 'translateY(0)';
+  playBeep();
+  setTimeout(()=>{ tick.style.opacity='0'; tick.style.transform='translateY(-6px)'; },900);
+}
+function playBeep(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 880;
+    g.gain.value = 0.06;
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    setTimeout(()=>{ o.stop(); ctx.close(); },180);
+  }catch(e){ console.log('audio error', e); }
+}
+
+// quick submit
+function handleQuickSubmit(){
+  if(state.freeze) return;
+  const txt = el('#quickEntry').value.trim();
+  if(!txt) return;
+  const parsed = parseQuickInput(txt);
+  if(!parsed) return;
+  addRow(parsed);
+  el('#quickEntry').value='';
+  freezeInputs(2000);
+  setTimeout(()=>{ el('#quickEntry').focus(); },2100);
+  confirmFeedback();
+}
+
+// tips rotation
+let tipIndex = 0;
+function rotateTips(){ tipIndex = (tipIndex+1) % TIPS.length; el('#tipText').textContent = TIPS[tipIndex]; }
+el('#tipText').textContent = TIPS[Math.floor(Math.random()*TIPS.length)];
+setInterval(rotateTips, 120000);
+
+// bindings
+el('#addQuickBtn').addEventListener('click', handleQuickSubmit);
+el('#quickEntry').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); handleQuickSubmit(); } });
+el('#toggleBalanceBtn').addEventListener('click', handleBalanceClick);
+el('#balancePill').addEventListener('click', handleBalanceClick);
+el('#toggleChangeBtn').addEventListener('click', ()=>{ const box = el('#changeBox'); box.style.display = (box.style.display === 'block') ? 'none' : 'block'; if(box.style.display === 'block') calcChangeDenoms(); });
+el('#screenshotBtn').addEventListener('click', ()=>{ const node = document.getElementById('mainCard'); html2canvas(node,{scale:2}).then(canvas=>{ const a=document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download='basket_shot.png'; a.click(); }); });
+el('#saveBtn').addEventListener('click', ()=>{ saveStateFromUI(); alert('تم حفظ الجلسة محلياً.'); });
+el('#loadBtn').addEventListener('click', ()=>{ loadState(); alert('تم تحميل الجلسة (إن وُجدت).'); });
+el('#exportJSON').addEventListener('click', ()=>{ saveStateFromUI(); const data = JSON.stringify(state, null, 2); const blob = new Blob([data],{type:'application/json'}); const a=document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='basket.json'; a.click(); });
+el('#exportTXT').addEventListener('click', ()=>{ saveStateFromUI(); let txt='قائمة مشتريات\n=================\n'; state.items.forEach((it,i)=>{ txt+=`${i+1}. ${it.name} — ${it.qty} × ${it.price} = ${(it.qty*it.price).toFixed(2)} ₪${it.excluded? ' (مشطوب)':''}\n`; }); txt+=`\nالمجموع: ${el('#grandTotal').textContent} ₪\n`; const blob = new Blob([txt],{type:'text/plain'}); const a=document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='basket.txt'; a.click(); });
+
+// initial: no rows until user input (load if exists)
+if(localStorage.getItem('basket_pink_final2')){ loadState(); } else { el('#itemsBody').innerHTML = ''; recalc(); }
+
 </script>
-
 </body>
 </html>

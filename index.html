@@ -430,5 +430,75 @@ el('#exportTXT').addEventListener('click', ()=>{ saveStateFromUI(); let txt='ق�
 if(localStorage.getItem('basket_pink_final2')){ loadState(); } else { el('#itemsBody').innerHTML = ''; recalc(); }
 
 </script>
+  
+<script>
+(function(){
+  const sites = ['index1.html','index2.html','index3.html'];
+  const storageKey = 'strictCycleIndex_v7';
+  const waitTime = 6000; // 6 ثواني انتظار
+
+  // اقرأ آخر موقع
+  let last = sessionStorage.getItem(storageKey);
+  last = last === null ? -1 : parseInt(last,10);
+  if(isNaN(last)) last = -1;
+
+  // التالي في الترتيب
+  let next = last + 1;
+
+  // إذا تجاوز الموقع الثالث، أعد الدورة ومسح كل شيء
+  if(next >= sites.length){
+    sessionStorage.clear();
+    localStorage.clear();
+    next = 0;
+  }
+
+  // سجل التالي في sessionStorage أولاً
+  sessionStorage.setItem(storageKey, next);
+
+  // دالة للتحقق من أن المستخدم ملأ البيانات المطلوبة
+  function isFormFilled() {
+    // هنا ضع شرطك للتحقق من النموذج، مثال: كل input يجب أن يحتوي قيمة
+    // افترض أن جميع الحقول المطلوبة داخل form مع id="mainForm"
+    const form = document.getElementById('mainForm');
+    if(!form) return true; // إذا لا يوجد form، اعتبر ملأ البيانات
+    const inputs = form.querySelectorAll('input, textarea, select');
+    for(let i=0;i<inputs.length;i++){
+      if(inputs[i].hasAttribute('required') && !inputs[i].value.trim()){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // الانتظار لمدة waitTime ثم التحقق من البيانات
+  setTimeout(() => {
+    if(isFormFilled()){
+      // مسح كل البيانات المؤقتة قبل الانتقال
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // إعادة حفظ next لتستمر الدورة بشكل صحيح
+      sessionStorage.setItem(storageKey, next);
+
+      // الانتقال للموقع التالي
+      window.location.replace(sites[next]);
+    } else {
+      // إذا لم يملأ المستخدم البيانات، أظهر تنبيه
+      alert('يرجى ملء جميع البيانات المطلوبة قبل الانتقال.');
+    }
+  }, waitTime);
+
+  // رسالة وداع عند الخروج أو تحديث الصفحة
+  window.addEventListener('beforeunload', function(e){
+    sessionStorage.clear();
+    localStorage.clear();
+    const msg = 'ستنتهي الجلسة وسيتم مسح جميع البيانات السابقة.';
+    e.preventDefault();
+    e.returnValue = msg;
+    return msg;
+  });
+
+})();
+</script>
 </body>
 </html>

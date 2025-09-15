@@ -428,8 +428,6 @@ el('#exportTXT').addEventListener('click', ()=>{ saveStateFromUI(); let txt='ق�
 
 // initial: no rows until user input (load if exists)
 if(localStorage.getItem('basket_pink_final2')){ loadState(); } else { el('#itemsBody').innerHTML = ''; recalc(); }
-
-</script>
 <script>
   window.addEventListener('beforeunload', function (e) {
     // رسالة التحذير للمستخدم

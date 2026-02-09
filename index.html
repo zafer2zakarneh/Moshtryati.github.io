@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>كاشير فلسطيني — POS 🇵🇸</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#fff6fb;
+  --card:#ffffff;
+  --rose-1:#ff8fb0;
+  --rose-2:#ff5a87;
+  --muted:#8a7a86;
+  --shadow: 0 10px 30px rgba(255,90,130,0.12);
+  --radius:14px;
+}
+*{box-sizing:border-box;font-family:'Cairo',sans-serif}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#fff7fb,#fff0f6);
+  direction:rtl;
+  padding:12px;
+  color:#222;
+}
+.container{max-width:980px;margin:auto}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:12px;
+  box-shadow:var(--shadow);
+  margin-bottom:12px;
+}
+
+/* زر */
+.btn{
+  background:var(--rose-1);
+  color:white;
+  border:none;
+  padding:9px 14px;
+  border-radius:10px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+/* جدول */
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{
+  padding:8px;
+  border-bottom:1px dashed #ffd6e3;
+  text-align:center;
+}
+.input{
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #f4d9e3;
+  text-align:center;
+}
+
+/* رصيد */
+.pill{
+  background:linear-gradient(90deg,#ff8fb0,#8ff0df);
+  padding:6px 12px;
+  border-radius:999px;
+  color:white;
+  font-weight:900;
+}
+
+/* العملات */
+.money-stack{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  margin-top:8px;
+}
+.money-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  animation:drop .6s ease;
+}
+.money-img{
+  width:86px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  transition:.25s ease;
+}
+.money-img:hover{transform:scale(1.08)}
+.money-count{
+  margin-top:6px;
+  font-weight:900;
+  font-size:15px;
+  background:#111;
+  color:white;
+  padding:3px 12px;
+  border-radius:999px;
+}
+@keyframes drop{
+  from{transform:translateY(-35px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+@media(max-width:720px){
+  .money-img{width:64px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="card">
+<h2>🧾 كاشير فلسطيني ذكي</h2>
+
+<input id="quickEntry" class="input" placeholder="اكتب: 3 قناني كولا 1 ش" />
+
+<button id="addQuickBtn" class="btn">إضافة صنف</button>
+
+<table class="table" style="margin-top:10px">
+<thead>
+<tr>
+<th>الصنف</th>
+<th>الكمية</th>
+<th>السعر ₪</th>
+<th>الإجمالي</th>
+</tr>
+</thead>
+<tbody id="itemsBody"></tbody>
+</table>
+
+<p style="font-weight:900;margin-top:8px">
+المجموع: <span id="grandTotal">0.00</span> ₪
+</p>
+
+<button id="payBtn" class="btn">💰 إدخال مبلغ الزبون</button>
+<div id="balancePill" class="pill" style="display:none;margin-top:6px"></div>
+
+<div class="card" style="margin-top:10px">
+<h3>💸 إرجاع النقود</h3>
+<p>الإرجاع المتوقع: <b id="changeAmount">0.00</b> ₪</p>
+<div id="changeVisual" class="money-stack"></div>
+</div>
+
+<button id="printReceipt" class="btn">🖨 طباعة فاتورة</button>
+
+</div>
+</div>
+
+<script>
+const DENOMS = [200,100,50,20,10,5,2,1,0.5];
+let state = {items:[],paid:null};
+
+function format(n){return Number(n||0).toFixed(2);}
+const el = s=>document.querySelector(s);
+
+function parseQuick(text){
+  if(!text)return null;
+  const priceMatch = text.match(/(\d+(\.\d+)?)\s*ش/);
+  let price = priceMatch ? parseFloat(priceMatch[1]) : 0;
+  if(priceMatch) text = text.replace(priceMatch[0],'').trim();
+  let qty = 1;
+  const qtyMatch = text.match(/^(\d+)/);
+  if(qtyMatch){
+    qty = parseFloat(qtyMatch[1]);
+    text = text.replace(qtyMatch[0],'').trim();
+  }
+  let name = text.trim() || "بدون اسم";
+  return {name,qty,price};
+}
+
+function addRow(item){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+  <td><input class="input name" value="${item.name}"></td>
+  <td><input class="input qty" type="number" value="${item.qty}"></td>
+  <td><input class="input price" type="number" value="${item.price}"></td>
+  <td class="rowTotal">0.00</td>
+  `;
+  el('#itemsBody').appendChild(tr);
+  recalc();
+}
+
+function recalc(){
+  let total = 0;
+  document.querySelectorAll('#itemsBody tr').forEach(row=>{
+    const q = parseFloat(row.querySelector('.qty').value||0);
+    const p = parseFloat(row.querySelector('.price').value||0);
+    const rowTotal = q*p;
+    row.querySelector('.rowTotal').textContent = format(rowTotal);
+    total += rowTotal;
+  });
+  el('#grandTotal').textContent = format(total);
+  calcChange();
+}
+
+function calcChange(){
+  const total = parseFloat(el('#grandTotal').textContent||0);
+  const paid = state.paid || 0;
+  let diff = Math.round((paid-total)*100)/100;
+  el('#changeAmount').textContent = format(Math.abs(diff));
+  const box = el('#changeVisual');
+  box.innerHTML = '';
+
+  if(diff <= 0){
+    box.innerHTML = '<span>لا حاجة لإرجاع</span>';
+    return;
+  }
+
+  let rem = diff;
+  DENOMS.forEach((d,i)=>{
+    let count = Math.floor(rem / d);
+    if(count>0){
+      rem = Math.round((rem - count*d)*100)/100;
+      const div = document.createElement('div');
+      div.className = "money-box";
+      div.style.animationDelay = `${i*0.08}s`;
+
+      const img = document.createElement('img');
+      img.src = `images/money/${d}.png`;
+      img.className = "money-img";
+
+      const label = document.createElement('div');
+      label.className = "money-count";
+      label.textContent = `× ${count}`;
+
+      div.appendChild(img);
+      div.appendChild(label);
+      box.appendChild(div);
+    }
+  });
+
+  playCashSound();
+}
+
+function playCashSound(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.frequency.value = 650;
+    g.gain.value = 0.08;
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.start();
+    setTimeout(()=>{osc.stop();ctx.close();},200);
+  }catch{}
+}
+
+document.getElementById('addQuickBtn').onclick = ()=>{
+  const txt = el('#quickEntry').value.trim();
+  if(!txt) return;
+  const parsed = parseQuick(txt);
+  addRow(parsed);
+  el('#quickEntry').value='';
+};
+
+document.getElementById('payBtn').onclick = ()=>{
+  const v = prompt("أدخل مبلغ الزبون ₪:");
+  if(v===null) return;
+  state.paid = parseFloat(v);
+  el('#balancePill').style.display = 'inline-block';
+  el('#balancePill').textContent = "دفع: " + format(state.paid) + " ₪";
+  recalc();
+};
+
+document.getElementById('printReceipt').onclick = ()=>{
+  let txt = "فاتورة كاشير\n=================\n";
+  document.querySelectorAll('#itemsBody tr').forEach((r,i)=>{
+    const n = r.querySelector('.name').value;
+    const q = r.querySelector('.qty').value;
+    const p = r.querySelector('.price').value;
+    txt += `${i+1}. ${n} — ${q} × ${p} ₪\n`;
+  });
+  txt += `\nالمجموع: ${el('#grandTotal').textContent} ₪\n`;
+  txt += `دفع الزبون: ${state.paid || 0} ₪\n`;
+
+  const blob = new Blob([txt],{type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "receipt.txt";
+  a.click();
+};
+</script>
+</body>
+</html>
